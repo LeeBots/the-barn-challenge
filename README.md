@@ -1,8 +1,3 @@
-<p align="center">
-  <img width = "100%" src='res/BARN_Challenge.png' />
-  </p>
-
---------------------------------------------------------------------------------
 
 # ICRA BARN Navigation Challenge
 
