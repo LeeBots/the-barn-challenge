@@ -58,6 +58,7 @@ cd ..
 source /opt/ros/<YOUR_ROS_VERSION>/setup.bash
 rosdep init; rosdep update
 rosdep install -y --from-paths . --ignore-src --rosdistro=<YOUR_ROS_VERSION>
+sudo apt-get install ros-<YOUR_ROS_VERSION>-<build dependencies>
 ```
 
 5. (2)Install TEB ROS package dependencies: (replace `<YOUR_ROS_VERSION>` with your own, e.g. melodic)
