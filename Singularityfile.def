@@ -24,8 +24,10 @@ From: ros:melodic
     cd ..
     rosdep init; rosdep update
     rosdep install -y --from-paths . --ignore-src --rosdistro=melodic
+    sudo apt-get install ros-melodic-teb-local-planner
+    rosdep install teb_local_planner
     source devel/setup.bash
-    catkin_make
+    catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
 
 %environment
     export PATH="/venv/bin:$PATH"
