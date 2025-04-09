@@ -1,13 +1,4 @@
-<p align="center">
-  <img width = "100%" src='res/BARN_Challenge.png' />
-  </p>
-
---------------------------------------------------------------------------------
-
 # ICRA BARN Navigation Challenge
-
-## Updates:
-* 02/04/2024: Adding 60 [DynaBARN](https://github.com/aninair1905/DynaBARN) environments. DynaBARN environments can be accessed by world indexes from 300-359.
 
 ## Requirements
 If you run it on a local machine without containers:
@@ -35,6 +26,11 @@ export PATH="/<YOUR_HOME_DIR>/nav_challenge/bin:$PATH"
 2. Install Python dependencies
 ```
 pip3 install defusedxml rospkg netifaces numpy
+# if melodic tried
+pip install empy==3.3.2
+#if noetic tried
+pip install empy==3.3.4
+# if some error comes out you have to install all dependency
 ```
 
 3. Create ROS workspace
@@ -45,7 +41,7 @@ cd /<YOUR_HOME_DIR>/jackal_ws/src
 
 4. Clone this repo and required ros packages: (replace `<YOUR_ROS_VERSION>` with your own, e.g. melodic)
 ```
-git clone https://github.com/Daffan/the-barn-challenge.git
+git clone https://github.com/LeeBots/the-barn-challenge.git
 git clone https://github.com/jackal/jackal.git --branch <YOUR_ROS_VERSION>-devel
 git clone https://github.com/jackal/jackal_simulator.git --branch <YOUR_ROS_VERSION>-devel
 git clone https://github.com/jackal/jackal_desktop.git --branch <YOUR_ROS_VERSION>-devel
@@ -58,16 +54,17 @@ cd ..
 source /opt/ros/<YOUR_ROS_VERSION>/setup.bash
 rosdep init; rosdep update
 rosdep install -y --from-paths . --ignore-src --rosdistro=<YOUR_ROS_VERSION>
+```
+
+5-2. Install TEB ROS package dependencies: (replace `<YOUR_ROS_VERSION>` with your own, e.g. melodic)
+```
+source /opt/ros/<YOUR_ROS_VERSION>/setup.bash
+sudo apt-get install ros-<YOUR_ROS_VERSION>-teb-local-planner
 
 # you need to install build dependencies for example...
 sudo apt-get install ros-<YOUR_ROS_VERSION>-sparse-bundle-adjustment
 sudo apt-get install ros-<YOUR_ROS_VERSION>-libg2o
-```
 
-5. (2)Install TEB ROS package dependencies: (replace `<YOUR_ROS_VERSION>` with your own, e.g. melodic)
-```
-source /opt/ros/<YOUR_ROS_VERSION>/setup.bash
-sudo apt-get install ros-<YOUR_ROS_VERSION>-teb-local-planner
 rosdep install teb_local_planner
 ```
 
@@ -83,7 +80,7 @@ Follow the instruction below to run simulations in Singularity containers.
 
 2. Clone this repo
 ```
-git clone https://github.com/Daffan/the-barn-challenge.git
+git clone https://github.com/LeeBots/the-barn-challenge.git
 cd the-barn-challenge
 ```
 
@@ -96,7 +93,10 @@ sudo singularity build --notest nav_competition_image.sif Singularityfile.def
 Navigate to the folder of this repo. Below is the example to run move_base with DWA as local planner.
 
 If you run it on your local machines: (the example below runs [move_base](http://wiki.ros.org/move_base) with DWA local planner in world 0)
+Because of the odom issue (without catkin_make, the goal position changes, which leads to poor navigation), every time you run the simulation, you have to catkin_make. 
 ```
+catkin_make
+cd src/the-barn-challenge/
 source ../../devel/setup.sh
 python3 run.py --world_idx 0
 ```
