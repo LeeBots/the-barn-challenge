@@ -220,127 +220,13 @@ bool TebLocalPlannerROS::setPlan(const std::vector<geometry_msgs::PoseStamped>& 
   global_plan_.clear();
   global_plan_ = orig_global_plan;
 
-  // // 매번 호출될 때마다 고유한 파일 이름 생성 (예: /tmp/global_plan_초_나노초.txt)
-  // ros::Time now = ros::Time::now();
-  // std::stringstream ss;
-  // ss << "home/glab/tmp/global_plan_" << now.sec << "_" << now.nsec << ".txt";
-  // std::string filename = ss.str();
-
-  // std::ofstream outfile(filename.c_str());
-  // if (outfile.is_open())
-  // {
-  //   for (const auto& pose_stamped : orig_global_plan)
-  //   {
-  //     const geometry_msgs::Pose& pose = pose_stamped.pose;
-  //     // position과 orientation 정보를 공백으로 구분하여 저장 (각 행은 하나의 Pose)
-  //     outfile << pose.position.x << " " << pose.position.y << " " << pose.position.z << " ";
-  //     outfile << pose.orientation.x << " " << pose.orientation.y << " " << pose.orientation.z << " " << pose.orientation.w << "\n";
-  //   }
-  //   outfile.close();
-  //   ROS_INFO("Global plan saved to %s", filename.c_str());
-  // }
-  // else
-  // {
-  //   ROS_ERROR("Unable to open file %s for writing global plan", filename.c_str());
-  // }
-  
-  // we do not clear the local planner here, since setPlan is called frequently whenever the global planner updates the plan.
-  // the local planner checks whether it is required to reinitialize the trajectory or not within each velocity computation step.  
-            
-  // reset goal_reached_ flag
   goal_reached_ = false;
   
   return true;
 }
 
-
-// bool TebLocalPlannerROS::setPlan(const std::vector<geometry_msgs::PoseStamped>& orig_global_plan)
-// {
-//   static bool manual_plan_set_ = false; // 수동 Plan 설정 여부 플래그
-
-//   // check if plugin is initialized
-//   if (!initialized_)
-//   {
-//     ROS_ERROR("teb_local_planner has not been initialized, please call initialize() before using this planner");
-//     return false;
-//   }
-
-//   if (!manual_plan_set_)
-//   {
-//     // 수동으로 Global Plan 설정
-//     global_plan_.clear();
-//     geometry_msgs::PoseStamped pose;
-
-//     // Example manual plan (사용자가 정의한 Plan)
-//     std::vector<std::pair<double, double>> manual_plan = {
-//     {-0.426784, 4.42194}, {-0.461211, 4.41846}, {-0.48614, 4.41657}, {-0.511011, 4.41404}, 
-//     {-0.535795, 4.41076}, {-0.560446, 4.40659}, {-0.584909, 4.40144}, {-0.60911, 4.39517}, 
-//     {-0.632978, 4.38773}, {-0.65641, 4.37902}, {-0.679485, 4.3694}, {-0.702521, 4.35969}, 
-//     {-0.725526, 4.3499}, {-0.748472, 4.33998}, {-0.771368, 4.32994}, {-0.794212, 4.31978}, 
-//     {-0.817076, 4.30967}, {-0.839912, 4.2995}, {-0.862722, 4.28926}, {-0.885549, 4.27907}, 
-//     {-0.90837, 4.26886}, {-0.931262, 4.25881}, {-0.954282, 4.24906}, {-0.977492, 4.23977}, 
-//     {-1.00091, 4.23103}, {-1.02457, 4.22296}, {-1.04826, 4.21495}, {-1.07193, 4.20693}, 
-//     {-1.09559, 4.19884}, {-1.11923, 4.1907}, {-1.14284, 4.18247}, {-1.16641, 4.17416}, 
-//     {-1.18998, 4.16582}, {-1.21354, 4.15746}, {-1.23709, 4.14907}, {-1.26063, 4.14064}, 
-//     {-1.28415, 4.13216}, {-1.30764, 4.12363}, {-1.33113, 4.11507}, {-1.35461, 4.10648}, 
-//     {-1.3781, 4.09792}, {-1.40155, 4.08924}, {-1.425, 4.08059}, {-1.44845, 4.07193}, 
-//     {-1.47192, 4.06332}, {-1.49545, 4.05485}, {-1.51907, 4.04666}, {-1.54281, 4.03883}, 
-//     {-1.5667, 4.03146}, {-1.59075, 4.02463}, {-1.61483, 4.01791}, {-1.63882, 4.01089}, 
-//     {-1.66268, 4.00342}, {-1.68635, 3.99537}, {-1.70974, 3.98656}, {-1.73278, 3.97684}, 
-//     {-1.75561, 3.96667}, {-1.77847, 3.95654}, {-1.80138, 3.94653}, {-1.82432, 3.9366}, 
-//     {-1.84763, 3.92756}, {-1.86978, 3.91596}, {-1.89234, 3.90519}, {-1.91683, 3.90019}, 
-//     {-1.94171, 3.89772}, {-1.96671, 3.89803}, {-1.9875, 3.89191}, {-2.01249, 3.88999}, 
-//     {-2.03608, 3.88888}, {-2.05962, 3.88777}, {-2.08307, 3.88555}, {-2.10711, 3.88333}, 
-//     {-2.13183, 3.87999}, {-2.15671, 3.87555}, {-2.1817, 3.87302}, {-2.2067, 3.87263}, 
-//     {-2.2317, 3.87275}, {-2.25669, 3.87222}, {-2.28167, 3.87222}, {-2.30657, 3.87222}, 
-//     {-2.32689, 3.87222}, {-2.35123, 3.87222}, {-2.36351, 3.87222}, {-2.37678, 3.87194}, 
-//     {-2.38987, 3.87333}, {-2.40788, 3.87444}, {-2.43001, 3.87555}, {-2.45193, 3.87444}, 
-//     {-2.47358, 3.87333}, {-2.48393, 3.87444}, {-2.50747, 3.8748}, {-2.53208, 3.87918}, 
-//     {-2.55666, 3.88372}, {-2.5811, 3.88902}, {-2.6047, 3.89727}, {-2.62736, 3.90782}, 
-//     {-2.64964, 3.91916}, {-2.67338, 3.92701}, {-2.69682, 3.9357}, {-2.72011, 3.94478}, 
-//     {-2.74326, 3.95422}, {-2.7663, 3.96393}, {-2.78945, 3.97336}, {-2.8124, 3.98327}, 
-//     {-2.83519, 3.99354}, {-2.85785, 4.00411}, {-2.88042, 4.01487}, {-2.90303, 4.02553}, 
-//     {-2.92551, 4.03648}, {-2.94787, 4.04766}, {-2.97014, 4.059}, {-2.99235, 4.0705}, 
-//     {-3.01479, 4.08151}, {-3.03721, 4.09256}, {-3.05952, 4.10385}, {-3.08179, 4.1152}, 
-//     {-3.10503, 4.12442}, {-3.12841, 4.13329}, {-3.15184, 4.14201}, {-3.17532, 4.15057}, 
-//     {-3.19844, 4.16009}, {-3.22125, 4.17033}, {-3.24446, 4.17962}, {-3.26769, 4.18885}, 
-//     {-3.29094, 4.19804}, {-3.3142, 4.20721}, {-3.33745, 4.21639}, {-3.36073, 4.22551}, 
-//     {-3.38405, 4.23452}, {-3.4073, 4.24372}, {-3.4305, 4.25301}, {-3.45364, 4.26248}, 
-//     {-3.47678, 4.27194}, {-3.52678, 4.32194}, {-3.495294, 4.35859}};
-
-//     // Manual Plan 추가
-//     for (const auto& point : manual_plan)
-//     {
-//       pose.header.frame_id = "map"; 
-//       pose.header.stamp = ros::Time::now(); 
-//       pose.pose.position.x = point.first;
-//       pose.pose.position.y = point.second;
-//       pose.pose.position.z = 0.0; // Assume 2D plan
-//       pose.pose.orientation.x = 0.0;
-//       pose.pose.orientation.y = 0.0;
-//       pose.pose.orientation.z = 0.0;
-//       pose.pose.orientation.w = 1.0; // Default orientation
-//       global_plan_.push_back(pose);
-//     }                         
-
-//     ROS_INFO("Manual global plan has been set.");
-
-//     manual_plan_set_ = true; // 플래그 설정
-//   }
-//   else
-//   {
-//     ROS_WARN("Global plan update is ignored since a manual plan has been set.");
-//   }
-
-//   // reset goal_reached_ flag
-//   goal_reached_ = false;
-
-//   return true;
-// }
-
 bool TebLocalPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
 {
-  auto start = std::chrono::high_resolution_clock::now();
 
   ROS_DEBUG("computeVelocityCommands");
   std::string dummy_message;
@@ -349,24 +235,6 @@ bool TebLocalPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
   uint32_t outcome = computeVelocityCommands(dummy_pose, dummy_velocity, cmd_vel_stamped, dummy_message);
   cmd_vel = cmd_vel_stamped.twist;
 
-  // 시간 측정 종료
-  auto end = std::chrono::high_resolution_clock::now();
-
-  // 경과 시간 계산 (마이크로초 단위)
-  auto duration = std::chrono::duration<double, std::milli>(end - start).count();
-  
-  // 파일에 저장
-  std::ofstream outFile("/home/glab/execution_time.txt", std::ios::app); // 파일을 append 모드로 열기
-  if (outFile.is_open()) {
-      outFile << "Execution time: " << duration << " ms" << std::endl;
-      outFile.close();
-  } else {
-      std::cerr << "Failed to open file for writing." << std::endl;
-  }
-  
-  // 콘솔 출력
-  std::cout << "Execution time: " << duration << " ms" << std::endl;
-  
   return outcome == mbf_msgs::ExePathResult::SUCCESS;
 }
 
@@ -512,24 +380,9 @@ uint32_t TebLocalPlannerROS::computeVelocityCommands(const geometry_msgs::PoseSt
 
   // bool success = planner_->plan(costmap_model_.get(), footprint_spec_, transformed_plan, robot_inscribed_radius_, robot_circumscribed_radius, &robot_vel_, cfg_.goal_tolerance.free_goal_vel);
   // local planning (using TEB)
-  auto start0 = std::chrono::high_resolution_clock::now();
+
   bool success = planner_->plan(transformed_plan, &robot_vel_, cfg_.goal_tolerance.free_goal_vel);
-  // 시간 측정 종료
-  auto end0 = std::chrono::high_resolution_clock::now();
 
-  // 경과 시간 계산 (마이크로초 단위)
-  auto duration0 = std::chrono::duration<double, std::milli>(end0 - start0).count();
-
-  std::ofstream outFile("/home/glab/execution_time.txt", std::ios::app);   
-  if (outFile.is_open()) {
-      outFile << "Optimization time: " << duration0 << " ms" << std::endl;
-      outFile.close();
-  } else {
-      std::cerr << "Failed to open file for writing." << std::endl;
-  }
-    
-  // 콘솔 출력
-  std::cout << "Optimization time: " << duration0 << " ms" << std::endl;
 
   ROS_DEBUG("Plan result: %s", success ? "successful" : "failed");
 
@@ -583,7 +436,7 @@ uint32_t TebLocalPlannerROS::computeVelocityCommands(const geometry_msgs::PoseSt
 
     // now we reset everything to start again with the initialization of new trajectories.
     planner_->clearPlanner();
-    ROS_WARN("TebLocalPlannerROS: trajectory is not feasible. Resetting planner...");
+    // ROS_WARN("TebLocalPlannerROS: trajectory is not feasible. Resetting planner...");
     
     ++no_infeasible_plans_; // increase number of infeasible solutions in a row
     time_last_infeasible_plan_ = ros::Time::now();
@@ -666,8 +519,7 @@ struct Point2D {
   double x, y;
 };
 
-// nanoflann용 포인트 클라우드 래퍼 (파일 범위에 정의)
-// local class 내에서 template member 함수 선언이 불가능하므로, 여기서 정의합니다.
+
 struct PointCloud2D {
   std::vector<Point2D> pts;
 
@@ -694,25 +546,8 @@ std::vector<std::pair<geometry_msgs::Point, double>> TebLocalPlannerROS::detectN
 {
   std::vector<std::pair<geometry_msgs::Point, double>> medial_axis_point;
 
-  auto start1 = std::chrono::high_resolution_clock::now();
-
   std::vector<geometry_msgs::Point> samples = generateSamples(transformed_plan, *costmap_);
-  // 시간 측정 종료
-  auto end1 = std::chrono::high_resolution_clock::now();
 
-  // 경과 시간 계산 (마이크로초 단위)
-  auto duration1 = std::chrono::duration<double, std::milli>(end1 - start1).count();
-    
-  std::ofstream outFile("/home/glab/execution_time.txt", std::ios::app); 
-  if (outFile.is_open()) {
-      outFile << "Generate Samples Execution time: " << duration1 << " ms" << std::endl;
-      outFile.close();
-  } else {
-      std::cerr << "Failed to open file for writing." << std::endl;
-  }
-    
-  // 콘솔 출력
-  std::cout << "Generate Samples Execution time: " << duration1 << " ms" << std::endl;
   visualization_->visualizeSamples(samples);
 
   double obst_radius = 0.6;
@@ -743,31 +578,10 @@ std::vector<std::pair<geometry_msgs::Point, double>> TebLocalPlannerROS::detectN
   // 장애물이 포함된 샘플로 Medial Ball 생성
   for (const auto& point : narrow_points)
   {
-    auto start2 = std::chrono::high_resolution_clock::now();
-    
+
     auto medial_result = findMedialBallRadius(point, *costmap_);
     double medial_radius = medial_result.second;
     geometry_msgs::Point final_center = medial_result.first;
-
-   // 시간 측정 종료
-    auto end2 = std::chrono::high_resolution_clock::now();
-
-    // 경과 시간 계산 (마이크로초 단위)
-    auto duration2 = std::chrono::duration<double, std::milli>(end2 - start2).count();
-      
-    // 파일에 저장
-    std::ofstream outFile("/home/glab/execution_time.txt", std::ios::app); // 파일을 append 모드로 열기
-    if (outFile.is_open()) {
-        outFile << "Create Medial Ball Execution time: " << duration2 << " ms" << std::endl;
-        outFile.close();
-    } else {
-        std::cerr << "Failed to open file for writing." << std::endl;
-    }
-      
-    // 콘솔 출력
-    std::cout << "Create Medial Ball Execution time: " << duration2 << " ms" << std::endl;
-    ROS_INFO("Medial Ball Center: (%.3f, %.3f), Radius: %.3f",final_center.x, final_center.y, medial_radius);
-
 
     // 로봇과 medial point 사이의 벡터 계산
     double dx = final_center.x - robot_position.x;
@@ -780,8 +594,6 @@ std::vector<std::pair<geometry_msgs::Point, double>> TebLocalPlannerROS::detectN
       continue;
 
     double distance_to_goal = euclideanDistance(final_center, transformed_plan.back().pose.position);
-
-    ROS_INFO("distance to goal : %lf", distance_to_goal);
 
     // threshold 이상인 경우 추가하지 않음
     if (medial_radius < thre && medial_radius >= 0.05 && distance_to_goal > goal_threshold)
@@ -1018,125 +830,6 @@ std::pair<geometry_msgs::Point, double> TebLocalPlannerROS::findMedialBallRadius
     return { medial_center, radius };
 }
 
-// 2step grid
-// geometry_msgs::Point TebLocalPlannerROS::performMedialAxisClimb(
-//   const geometry_msgs::Point& start_point,
-//   const costmap_2d::Costmap2D& costmap,
-//   const std::vector<float>& distance_field,
-//   double resolution, double origin_x, double origin_y)
-// {
-//     unsigned int map_width = costmap.getSizeInCellsX();
-//     unsigned int map_height = costmap.getSizeInCellsY();
-// 
-//     초기 위치
-//     int cur_x = static_cast<int>((start_point.x - origin_x) / resolution);
-//     int cur_y = static_cast<int>((start_point.y - origin_y) / resolution);
-//     float cur_dist = distance_field[cur_y * map_width + cur_x];
-// 
-//     std::vector<geometry_msgs::Point> grid_search_path;
-//     int max_fast_iter = 20;
-//     int fast_iter = 0;
-// 
-//     STEP 1: step=2 hill climbing
-//     int step = 2;
-//     while (fast_iter < max_fast_iter)
-//     {
-//         bool moved = false;
-//         float best_dist = cur_dist;
-//         int best_x = cur_x;
-//         int best_y = cur_y;
-// 
-//         for (int dy = -step; dy <= step; dy += step)
-//         {
-//             for (int dx = -step; dx <= step; dx += step)
-//             {
-//                 if (dx == 0 && dy == 0) continue;
-// 
-//                 int nx = cur_x + dx;
-//                 int ny = cur_y + dy;
-// 
-//                 if (nx < 0 || ny < 0 || nx >= static_cast<int>(map_width) || ny >= static_cast<int>(map_height))
-//                     continue;
-//                 float n_dist = distance_field[ny * map_width + nx];
-// 
-//                 if (n_dist > best_dist)
-//                 {
-//                     best_dist = n_dist;
-//                     best_x = nx;
-//                     best_y = ny;
-//                     moved = true;
-//                 }
-//             }
-//         }
-// 
-//         if (!moved || std::abs(best_dist - cur_dist) < 1e-3)
-//             break;
-// 
-//         cur_x = best_x;
-//         cur_y = best_y;
-//         cur_dist = best_dist;
-//         fast_iter++;
-//     }
-// 
-//     STEP 2: 1-step 주변 대칭성 (balance) 확인 및 보정 이동
-//     auto compute_symmetry_score = [&](int x, int y) -> float {
-//         float center = distance_field[y * map_width + x];
-//         float score = 0.0;
-//         int count = 0;
-// 
-//         for (int dy = -1; dy <= 1; ++dy) {
-//             for (int dx = -1; dx <= 1; ++dx) {
-//                 if (dx == 0 && dy == 0) continue;
-// 
-//                 int nx = x + dx;
-//                 int ny = y + dy;
-//                 if (nx < 0 || ny < 0 || nx >= static_cast<int>(map_width) || ny >= static_cast<int>(map_height))
-//                     continue;
-// 
-//                 float neighbor = distance_field[ny * map_width + nx];
-//                 float delta = std::abs(center - neighbor);
-//                 score += std::exp(-delta);  // delta 작을수록 score 높음
-//                 count++;
-//             }
-//         }
-//         return (count > 0) ? score / count : 0.0;
-//     };
-// 
-//     float best_symmetry = compute_symmetry_score(cur_x, cur_y);
-//     int best_sym_x = cur_x;
-//     int best_sym_y = cur_y;
-// 
-//     for (int dy = -1; dy <= 1; ++dy) {
-//         for (int dx = -1; dx <= 1; ++dx) {
-//             if (dx == 0 && dy == 0) continue;
-// 
-//             int nx = cur_x + dx;
-//             int ny = cur_y + dy;
-// 
-//             if (nx < 0 || ny < 0 || nx >= static_cast<int>(map_width) || ny >= static_cast<int>(map_height))
-//                 continue;
-// 
-//             float sym_score = compute_symmetry_score(nx, ny);
-//             if (sym_score > best_symmetry) {
-//                 best_symmetry = sym_score;
-//                 best_sym_x = nx;
-//                 best_sym_y = ny;
-//             }
-//         }
-//     }
-// 
-//     최종 위치로 설정 (보정된 symmetry 최적 위치)
-//     cur_x = best_sym_x;
-//     cur_y = best_sym_y;
-// 
-//     geometry_msgs::Point medial_center;
-//     medial_center.x = origin_x + (cur_x + 0.5) * resolution;
-//     medial_center.y = origin_y + (cur_y + 0.5) * resolution;
-//     medial_center.z = 0.0;
-// 
-//     visualization_->publishGridSearchPath(grid_search_path);
-//     return medial_center;
-// }
 
 //1 step grid 
 geometry_msgs::Point TebLocalPlannerROS::performMedialAxisClimb(
@@ -1193,14 +886,6 @@ geometry_msgs::Point TebLocalPlannerROS::performMedialAxisClimb(
         // 더 먼 셀이 없다면 종료 (local maximum)
         if (!moved)
             break;
-
-        // // for visualization
-        // geometry_msgs::Point p;
-        // p.x = origin_x + (cur_x + 0.5) * resolution;
-        // p.y = origin_y + (cur_y + 0.5) * resolution;
-        // p.z = 0.0;
-        // grid_search_path.push_back(p);
-
 
         // 이동
         cur_x = best_x;

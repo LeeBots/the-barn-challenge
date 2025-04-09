@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: ros:melodic
+From: ros: melodic
 
 %setup
     mkdir -p ${SINGULARITY_ROOTFS}/jackal_ws/src

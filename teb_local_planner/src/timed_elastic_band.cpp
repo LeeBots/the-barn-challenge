@@ -226,7 +226,6 @@ void TimedElasticBand::setTimeDiffVertexFixed(int index, bool status)
 
 void TimedElasticBand::autoResize(double dt_ref, double dt_hysteresis, int min_samples, int max_samples, bool fast_mode)
 {  
-  ROS_INFO("AUTO RESIZE");
   ROS_ASSERT(sizeTimeDiffs() == 0 || sizeTimeDiffs() + 1 == sizePoses());
   /// iterate through all TEB states and add/remove states!
   bool modified = true;
