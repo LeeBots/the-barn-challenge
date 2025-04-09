@@ -1,13 +1,4 @@
-<p align="center">
-  <img width = "100%" src='res/BARN_Challenge.png' />
-  </p>
-
---------------------------------------------------------------------------------
-
 # ICRA BARN Navigation Challenge
-
-## Updates:
-* 02/04/2024: Adding 60 [DynaBARN](https://github.com/aninair1905/DynaBARN) environments. DynaBARN environments can be accessed by world indexes from 300-359.
 
 ## Requirements
 If you run it on a local machine without containers:
@@ -35,6 +26,7 @@ export PATH="/<YOUR_HOME_DIR>/nav_challenge/bin:$PATH"
 2. Install Python dependencies
 ```
 pip3 install defusedxml rospkg netifaces numpy
+# if some error comes out you have to install all dependency
 ```
 
 3. Create ROS workspace
