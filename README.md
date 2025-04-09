@@ -93,7 +93,10 @@ sudo singularity build --notest nav_competition_image.sif Singularityfile.def
 Navigate to the folder of this repo. Below is the example to run move_base with DWA as local planner.
 
 If you run it on your local machines: (the example below runs [move_base](http://wiki.ros.org/move_base) with DWA local planner in world 0)
+Because of the odom issue (without catkin_make, the goal position changes, which leads to poor navigation), every time you run the simulation, you have to catkin_make. 
 ```
+catkin_make
+cd src/the-barn-challenge/
 source ../../devel/setup.sh
 python3 run.py --world_idx 0
 ```
